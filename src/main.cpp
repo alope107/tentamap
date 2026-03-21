@@ -8,23 +8,21 @@
 #include <bn_log.h>
 
 #include "bn_regular_bg_items_platforms.h"
+#include "bn_sprite_items_boxette.h"
 #include "bn_sprite_items_robot.h"
 
-inline bn::fixed tribool(bool p, bool q, bn::fixed magnitude) {
-    return p ? magnitude : q ? -magnitude : 0;
-}
+#include "aub/tribool.h"
 
-inline bn::fixed moveTribool(bn::keypad::key_type p, bn::keypad::key_type q, bn::fixed magnitude) {
-    return tribool(bn::keypad::held(p), bn::keypad::held(q), magnitude);
-}
-
-
-
+#include "Robot.h"
 
 int main() {
     bn::core::init();
 
+    tent::Robot robby = tent::Robot();
+
     auto robot = bn::sprite_items::robot.create_sprite();
+
+    auto boxette = bn::sprite_items::boxette.create_sprite();
 
     auto bg = bn::regular_bg_items::platforms.create_bg();
     auto map = bn::regular_bg_items::platforms.map_item();
@@ -35,27 +33,29 @@ int main() {
 
     while(true) {
         bn::fixed_point delta = { 
-            moveTribool(bn::keypad::key_type::RIGHT, bn::keypad::key_type::LEFT, speed),
-            moveTribool(bn::keypad::key_type::DOWN, bn::keypad::key_type::UP, speed)
+            aub::triboolHeld(bn::keypad::key_type::RIGHT, bn::keypad::key_type::LEFT, speed),
+            aub::triboolHeld(bn::keypad::key_type::DOWN, bn::keypad::key_type::UP, speed)
         };
 
         bn::fixed_point newPos = {robot.position() + delta};
 
-        //
-        bn::regular_bg_map_cell mapCell = map.cell({(newPos.x() / 8).round_integer() + ((256/2) / 8),
-                                                    (newPos.y() / 8).round_integer() + ((256/2) / 8)});
+        int snapX = (newPos.x() / 8).round_integer() + ((256/2) / 8);
+        auto snapY = (newPos.y() / 8).round_integer() + ((256/2) / 8);
+        bn::regular_bg_map_cell mapCell = map.cell(snapX, snapY);
 
         int cellIdx = bn::regular_bg_map_cell_info(mapCell).tile_index();
 
 
         if(cellIdx != validTileIndex) {
-            BN_LOG("Boop");
+            BN_LOG("Boop ", newPos.x(), " ", snapX);
+            BN_LOG("Boop", newPos.y(), " ", snapY);
         } else {
-            BN_LOG("nah");
+            BN_LOG("nah", newPos.x(), " ", snapX);
+            BN_LOG("nah", newPos.y(), " ", snapY);
             robot.set_position(newPos);
         }
-        
 
+        robby.update();
         bn::core::update();
     }
 }
