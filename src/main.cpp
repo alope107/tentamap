@@ -46,29 +46,48 @@ int main() {
         // int snapX = ((newPos.x()) / 8).round_integer() + ((256/2) / 8);
         // auto snapY = ((newPos.y()) / 8).round_integer() + ((256/2) / 8);
 
-        int xoffset = delta.x() > 0 ? 1 : 8;
-        int yoffset = delta.y() > 0 ? 1 : 8;
+        // int xoffset = delta.x() > 0 ? 1 : 8;
+        // int yoffset = delta.y() > 0 ? 1 : 8;
 
-        int snapX = ((newPos.x() - xoffset + (256/2))/8).round_integer();
-        auto snapY = ((newPos.y() - yoffset + (256/2))/8).round_integer();
-        bn::regular_bg_map_cell mapCell = map.cell(snapX, snapY);
+        bn::fixed subgridx = ((newPos.x() - 4 + (256/2))/8);
+        bn::fixed subgridy = ((newPos.y() - 4 + (256/2))/8);
+        bn::regular_bg_map_cell mapCells[] = {
+            map.cell(subgridx.floor_integer(), subgridy.floor_integer()),
+            map.cell(subgridx.floor_integer(), subgridy.ceil_integer()),
+            map.cell(subgridx.ceil_integer(), subgridy.floor_integer()),
+            map.cell(subgridx.ceil_integer(), subgridy.ceil_integer())
+        };
 
-        int cellIdx = bn::regular_bg_map_cell_info(mapCell).tile_index();
+        
 
+        bool allClear = true;
 
-        if(cellIdx != validTileIndex) {
-            if(bn::keypad::any_pressed()) {
-                BN_LOG("Boop ", newPos.x(), " ", snapX);
-                BN_LOG("Boop", newPos.y(), " ", snapY);
-            }
-            
-        } else {
-            if(bn::keypad::any_pressed()) {
-                BN_LOG("nah", newPos.x(), " ", snapX);
-                BN_LOG("nah", newPos.y(), " ", snapY);
-            }
+        for(bn::regular_bg_map_cell mapCell : mapCells) {
+             int cellIdx = bn::regular_bg_map_cell_info(mapCell).tile_index();
+             if(cellIdx != validTileIndex) {
+                allClear = false;
+                break;
+             }
+        }
+
+        if(allClear) {
             robot.set_position(newPos);
         }
+
+
+        // if(cellIdx != validTileIndex) {
+        //     if(bn::keypad::any_pressed()) {
+        //         BN_LOG("Boop ", newPos.x(), " ", snapX);
+        //         BN_LOG("Boop", newPos.y(), " ", snapY);
+        //     }
+            
+        // } else {
+        //     if(bn::keypad::any_pressed()) {
+        //         BN_LOG("nah", newPos.x(), " ", snapX);
+        //         BN_LOG("nah", newPos.y(), " ", snapY);
+        //     }
+        //     robot.set_position(newPos);
+        // }
 
 
         // bn::regular_bg_map_cell_info(bCell).
