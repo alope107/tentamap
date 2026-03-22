@@ -42,20 +42,15 @@ int main() {
         };
 
         bn::fixed_point newPos = {robot.position() + delta};
+        bn::fixed_point subgrid = (newPos + bn::fixed_point{-4 + (256/2), -4 + (256/2)})/8;
 
-        // int snapX = ((newPos.x()) / 8).round_integer() + ((256/2) / 8);
-        // auto snapY = ((newPos.y()) / 8).round_integer() + ((256/2) / 8);
-
-        // int xoffset = delta.x() > 0 ? 1 : 8;
-        // int yoffset = delta.y() > 0 ? 1 : 8;
-
-        bn::fixed subgridx = ((newPos.x() - 4 + (256/2))/8);
-        bn::fixed subgridy = ((newPos.y() - 4 + (256/2))/8);
+        // bn::fixed subgridx = ((newPos.x() - 4 + (256/2))/8);
+        // bn::fixed subgridy = ((newPos.y() - 4 + (256/2))/8);
         bn::regular_bg_map_cell mapCells[] = {
-            map.cell(subgridx.floor_integer(), subgridy.floor_integer()),
-            map.cell(subgridx.floor_integer(), subgridy.ceil_integer()),
-            map.cell(subgridx.ceil_integer(), subgridy.floor_integer()),
-            map.cell(subgridx.ceil_integer(), subgridy.ceil_integer())
+            map.cell(subgrid.x().floor_integer(), subgrid.y().floor_integer()),
+            map.cell(subgrid.x().floor_integer(), subgrid.y().ceil_integer()),
+            map.cell(subgrid.x().ceil_integer(), subgrid.y().floor_integer()),
+            map.cell(subgrid.x().ceil_integer(), subgrid.y().ceil_integer())
         };
 
         
