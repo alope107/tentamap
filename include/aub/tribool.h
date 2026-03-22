@@ -5,15 +5,18 @@
 
 namespace aub {
 
-    inline bn::fixed tribool(bool p, bool q, bn::fixed magnitude) {
-        return p ? magnitude : q ? -magnitude : 0;
+    template<typename T>
+    inline T tribool(bool p, bool q, T magnitude) {
+        return p ? magnitude : q ? -magnitude : T{};
     }
 
-    inline bn::fixed triboolHeld(bn::keypad::key_type p, bn::keypad::key_type q, bn::fixed magnitude) {
+    template<typename T>
+    inline T triboolHeld(bn::keypad::key_type p, bn::keypad::key_type q, T magnitude) {
         return tribool(bn::keypad::held(p), bn::keypad::held(q), magnitude);
     }
 
-    inline bn::fixed triboolPressed(bn::keypad::key_type p, bn::keypad::key_type q, bn::fixed magnitude) {
+    template<typename T>
+    inline T triboolPressed(bn::keypad::key_type p, bn::keypad::key_type q, T magnitude) {
         return tribool(bn::keypad::pressed(p), bn::keypad::pressed(q), magnitude);
     }
 
