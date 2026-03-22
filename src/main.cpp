@@ -46,8 +46,11 @@ int main() {
         // int snapX = ((newPos.x()) / 8).round_integer() + ((256/2) / 8);
         // auto snapY = ((newPos.y()) / 8).round_integer() + ((256/2) / 8);
 
-        int snapX = ((newPos.x() - 8 + (256/2))/8).round_integer();
-        auto snapY = ((newPos.y() - 8 + (256/2))/8).round_integer();
+        int xoffset = delta.x() > 0 ? 1 : 8;
+        int yoffset = delta.y() > 0 ? 1 : 8;
+
+        int snapX = ((newPos.x() - xoffset + (256/2))/8).round_integer();
+        auto snapY = ((newPos.y() - yoffset + (256/2))/8).round_integer();
         bn::regular_bg_map_cell mapCell = map.cell(snapX, snapY);
 
         int cellIdx = bn::regular_bg_map_cell_info(mapCell).tile_index();
